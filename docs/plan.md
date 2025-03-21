@@ -36,7 +36,7 @@
   - **Step Dependencies**: Step 2
   - **User Instructions**: Run `npm install @react-navigation/native @react-navigation/stack @react-navigation/bottom-tabs expo-linking react-native-screens react-native-safe-area-context`
 
-- [ ] Step 4: Configure theme and styling
+- [x] Step 4: Configure theme and styling
   - **Task**: Set up theme constants and styling utilities
   - **Files**:
     - `src/constants/theme.ts`: Define colors, spacing, typography
