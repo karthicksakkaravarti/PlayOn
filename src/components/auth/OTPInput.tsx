@@ -3,140 +3,93 @@ import {
   View, 
   StyleSheet, 
   TextInput, 
-  Keyboard, 
-  KeyboardType,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData
+  TouchableWithoutFeedback, 
+  Platform 
 } from 'react-native';
 import Text from '../ui/Text';
-import { colors, spacing, radius } from '../../constants/theme';
+import { colors, spacing, radius, typography } from '../../constants/theme';
 
 interface OTPInputProps {
   value: string;
   onChange: (value: string) => void;
   length?: number;
   error?: string;
-  autoFocus?: boolean;
 }
 
-const OTPInput: React.FC<OTPInputProps> = ({
-  value,
-  onChange,
-  length = 6,
-  error,
-  autoFocus
+const OTPInput: React.FC<OTPInputProps> = ({ 
+  value, 
+  onChange, 
+  length = 6, 
+  error 
 }) => {
-  const inputRefs = useRef<Array<TextInput | null>>([]);
-  const [inputValues, setInputValues] = useState<string[]>(Array(length).fill(''));
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<TextInput>(null);
   
-  // Initialize inputRefs
   useEffect(() => {
-    inputRefs.current = Array(length).fill(null);
-  }, [length]);
+    // Auto focus on component mount
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }, []);
   
-  // Update internal state when value changes externally
-  useEffect(() => {
-    const valueArray = value.split('').slice(0, length);
-    const newInputValues = Array(length).fill('');
-    
-    valueArray.forEach((digit, index) => {
-      newInputValues[index] = digit;
-    });
-    
-    setInputValues(newInputValues);
-  }, [value, length]);
+  const handlePress = () => {
+    inputRef.current?.focus();
+    setIsFocused(true);
+  };
 
-  // Focus the first input on mount if autoFocus is true
-  useEffect(() => {
-    if (autoFocus && inputRefs.current[0]) {
-      setTimeout(() => {
-        inputRefs.current[0]?.focus();
-      }, 100);
-    }
-  }, [autoFocus]);
-
-  const handleInputChange = (text: string, index: number) => {
+  const handleChangeText = (text: string) => {
     // Only allow digits
-    if (!/^\d*$/.test(text)) return;
+    const formattedText = text.replace(/[^0-9]/g, '');
     
-    const newInputValues = [...inputValues];
-    
-    // Handle paste of multiple digits
-    if (text.length > 1) {
-      const digits = text.split('').slice(0, length - index);
-      
-      digits.forEach((digit, digitIndex) => {
-        const targetIndex = index + digitIndex;
-        if (targetIndex < length) {
-          newInputValues[targetIndex] = digit;
-        }
-      });
-      
-      const nextIndex = Math.min(index + digits.length, length - 1);
-      inputRefs.current[nextIndex]?.focus();
-    } else {
-      // Handle single digit input
-      newInputValues[index] = text;
-      setInputValues(newInputValues);
-      
-      // Auto-advance to next input
-      if (text && index < length - 1) {
-        inputRefs.current[index + 1]?.focus();
-      }
-    }
-    
-    // Update parent component value
-    onChange(newInputValues.join(''));
-  };
-
-  const handleKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>, index: number) => {
-    // Handle backspace to move to previous input
-    if (e.nativeEvent.key === 'Backspace' && index > 0 && !inputValues[index]) {
-      inputRefs.current[index - 1]?.focus();
+    // Limit to specified length
+    if (formattedText.length <= length) {
+      onChange(formattedText);
     }
   };
 
-  const handleInputFocus = (index: number) => {
-    // When an input is focused, focus the first empty input or the last one
-    if (inputValues[index]) return;
-    
-    let focusIndex = inputValues.findIndex(digit => digit === '');
-    if (focusIndex === -1) focusIndex = length - 1;
-    
-    if (focusIndex !== index) {
-      inputRefs.current[focusIndex]?.focus();
-    }
-  };
+  // Create an array with the length equal to OTP length
+  const otpBoxArray = Array(length).fill(0);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputsContainer}>
-        {Array(length).fill(0).map((_, index) => (
-          <TextInput
-            key={index}
-            ref={ref => inputRefs.current[index] = ref}
-            style={[
-              styles.input,
-              error ? styles.inputError : null,
-              inputValues[index] ? styles.inputFilled : null
-            ]}
-            value={inputValues[index]}
-            onChangeText={text => handleInputChange(text, index)}
-            onKeyPress={e => handleKeyPress(e, index)}
-            onFocus={() => handleInputFocus(index)}
-            keyboardType="number-pad"
-            maxLength={length}
-            selectTextOnFocus
-            selectionColor={colors.primary.main}
-          />
-        ))}
+    <TouchableWithoutFeedback onPress={handlePress}>
+      <View style={styles.container}>
+        <View style={styles.inputContainer}>
+          {otpBoxArray.map((_, index) => {
+            const digit = value[index] || '';
+            const isCurrentPosition = index === value.length;
+            const isFilledBox = digit !== '';
+            
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.box,
+                  isFocused && isCurrentPosition && styles.boxFocused,
+                  error ? styles.boxError : null,
+                ]}
+              >
+                <Text style={styles.digit}>{digit}</Text>
+                {isFocused && isCurrentPosition && <View style={styles.cursor} />}
+              </View>
+            );
+          })}
+        </View>
+        
+        {error && <Text variant="caption" style={styles.errorText}>{error}</Text>}
+        
+        {/* Hidden TextInput to handle keyboard input */}
+        <TextInput
+          ref={inputRef}
+          value={value}
+          onChangeText={handleChangeText}
+          style={styles.hiddenInput}
+          keyboardType="number-pad"
+          maxLength={length}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+        />
       </View>
-      {error && (
-        <Text variant="body2" style={styles.errorText}>
-          {error}
-        </Text>
-      )}
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -144,33 +97,50 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
-  inputsContainer: {
+  inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
   },
-  input: {
-    width: 45,
-    height: 50,
+  box: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border.light,
-    borderRadius: radius.md,
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: '500',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.light,
+  },
+  boxFocused: {
+    borderColor: colors.primary.main,
+    borderWidth: 2,
+  },
+  boxError: {
+    borderColor: colors.system.error,
+  },
+  digit: {
+    fontSize: typography.fontSize.xxl,
+    fontWeight: '700',
     color: colors.text.primary,
   },
-  inputFilled: {
-    borderColor: colors.primary.main,
-    backgroundColor: colors.primary.light,
-  },
-  inputError: {
-    borderColor: colors.system.error,
+  cursor: {
+    position: 'absolute',
+    width: 2,
+    height: 24,
+    backgroundColor: colors.primary.main,
+    opacity: 0.8,
   },
   errorText: {
     color: colors.system.error,
-    marginTop: spacing.sm,
-    textAlign: 'center',
+    marginTop: spacing.xs,
+  },
+  hiddenInput: {
+    position: 'absolute',
+    opacity: 0,
+    width: 1,
+    height: 1,
   },
 });
 

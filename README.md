@@ -1,59 +1,118 @@
-# PlayOn - A Smart Booking Platform
+# PlayOn
 
-PlayOn is a versatile booking platform that allows users to find and reserve sports venues, facilities, and services with ease. Whether booking a football ground, a cricket pitch, or other recreational spaces, PlayOn makes the process seamless with instant reservations and secure online payments.
+PlayOn is a React Native mobile application that allows users to discover, book, and participate in sports activities and games.
 
 ## Features
 
-- Browse and book sports venues and facilities
-- Make secure online payments
-- View and manage bookings
-- Leave reviews and ratings
-- Favorite venues for quick access
-- Mobile-based venue management for owners
-- Admin panel for platform oversight
+- **Phone Authentication**: Secure user authentication using Firebase phone authentication
+- **User Profiles**: User profile management and customization
+- **Modern UI**: Clean and intuitive interface with consistent theming
 
-## Tech Stack
+## Getting Started
 
-- **Frontend**: React Native, Expo
-- **Authentication**: Firebase Phone Auth
-- **Payments**: Razorpay, UPI
+### Prerequisites
+
+- Node.js (v16.13.2 or newer recommended)
+- npm or yarn
+- React Native development environment set up
+- Firebase project with phone authentication enabled
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/PlayOn.git
+cd PlayOn
+```
+
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up environment variables
+   - Copy `.env.example` to `.env`
+   - Update the Firebase configuration values with your Firebase project details
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Configure Firebase
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Phone Authentication in the Authentication section
+   - Add test phone numbers in the Firebase console if you're using the Firebase emulator
+   - Copy the Firebase configuration details to your `.env` file
+
+5. Start the development server
+```bash
+npm start
+# or
+yarn start
+```
+
+6. Run the app on a device or emulator
+```bash
+# Android
+npm run android
+# or
+yarn android
+
+# iOS
+npm run ios
+# or
+yarn ios
+```
+
+## Firebase Authentication Setup
+
+1. **Create a Firebase Project**:
+   - Go to the [Firebase Console](https://console.firebase.google.com/)
+   - Click "Add project" and follow the setup wizard
+
+2. **Enable Phone Authentication**:
+   - In your Firebase project, go to "Authentication" section
+   - Click on "Sign-in method" and enable "Phone"
+
+3. **Add Test Phone Numbers** (For Development):
+   - In the Firebase Authentication section, go to "Phone" sign-in method
+   - Scroll down to "Phone numbers for testing" and add your test numbers
+
+4. **Get Firebase Configuration**:
+   - In your Firebase project settings, find the Firebase SDK configuration
+   - Copy these values to your `.env` file
+
+5. **Configure reCAPTCHA Verification**:
+   - For Android: Add your SHA-1 and SHA-256 certificates in the Firebase project settings
+   - For iOS: No additional setup required for development
+
+## Known Issues
+
+### Firebase reCAPTCHA Warning
+
+You may see the following warning in the console:
+```
+Error: FirebaseRecaptcha: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead
+```
+
+This warning is related to the `expo-firebase-recaptcha` package and will be fixed in future releases. The warning doesn't affect functionality and can be safely ignored for now. Our implementation has been updated to mitigate this warning as much as possible.
 
 ## Project Structure
 
 ```
-PlayOn/
-├── assets/            # App assets (images, fonts)
-├── docs/              # Documentation files
-├── src/               # Source code
-│   ├── assets/        # App-specific assets
-│   ├── components/    # Reusable UI components
-│   ├── constants/     # App constants
-│   ├── context/       # React context providers
-│   ├── hooks/         # Custom React hooks
-│   ├── navigation/    # Navigation configuration
-│   ├── screens/       # App screens
-│   ├── services/      # API and external services
-│   ├── types/         # TypeScript type definitions
-│   └── utils/         # Utility functions
-├── App.tsx            # Main app component
-└── package.json       # Project dependencies
+src/
+├── assets/         # Images, fonts, and other static assets
+├── components/     # Reusable UI components
+├── constants/      # Theme, configuration constants
+├── context/        # Context providers (Auth, etc.)
+├── hooks/          # Custom React hooks
+├── navigation/     # Navigation configuration
+├── screens/        # App screens
+├── services/       # Firebase and other external services
+├── types/          # TypeScript type definitions
+└── utils/          # Utility functions
 ```
-
-## Getting Started
-
-1. Install dependencies:
-
-```
-npm install
-```
-
-2. Start the development server:
-
-```
-npm start
-```
-
-3. Follow the instructions to open the app on your device or emulator.
 
 ## License
 

@@ -1,11 +1,12 @@
-import { initializeApp, getApp, getApps } from 'firebase/app';
+import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 import { 
   getAuth, 
   initializeAuth, 
   PhoneAuthProvider, 
   signInWithCredential, 
   ApplicationVerifier,
-  PhoneInfoOptions
+  PhoneInfoOptions,
+  Auth
 } from 'firebase/auth';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,8 +23,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
-let auth;
+let app: FirebaseApp;
+let auth: Auth;
 
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);

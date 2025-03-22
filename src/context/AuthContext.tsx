@@ -1,6 +1,10 @@
-import React, { createContext, useEffect, useReducer, useState } from 'react';
+import React, { createContext, useEffect, useReducer, useState, useRef } from 'react';
 import { User, AuthContextType, AuthState, UserRole } from '../types/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import { app } from '../services/firebase'; 
+import { sendVerificationCode, verifyCode, updateUser, signOut } from '../services/auth';
+import { View } from "react-native";
 
 // Initial auth state
 const initialState: AuthState = {
@@ -62,6 +66,7 @@ const USER_STORAGE_KEY = '@PlayOn:user';
 // AuthProvider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const recaptchaVerifierRef = useRef<FirebaseRecaptchaVerifierModal | null>(null);
 
   // Attempt to restore user session from storage on mount
   useEffect(() => {
@@ -105,14 +110,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'AUTH_LOADING' });
     
     try {
-      // In a real app, this would call Firebase Auth or your backend
-      // to initiate phone verification
-
-      // Mock implementation with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Format phone number if needed
+      const formattedPhoneNumber = phoneNumber.startsWith('+')
+        ? phoneNumber
+        : `+${phoneNumber}`;
       
-      // Generate a fake verification ID
-      const verificationId = 'verification-id-' + Date.now();
+      // Check if recaptcha verifier is available
+      if (!recaptchaVerifierRef.current) {
+        throw new Error('reCAPTCHA verifier not initialized');
+      }
+      
+      // Send verification code with Firebase
+      const verificationId = await sendVerificationCode(
+        formattedPhoneNumber,
+        recaptchaVerifierRef.current
+      );
       
       return verificationId;
     } catch (error) {
@@ -127,27 +139,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'AUTH_LOADING' });
     
     try {
-      // In a real app, this would validate the OTP with Firebase Auth or your backend
-      
-      // Mock implementation with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      if (otp !== '123456') {
-        // For demo purposes, let's pretend "123456" is always the valid code
-        throw new Error('Invalid verification code');
-      }
-      
-      // Create a mock user or fetch the real user from your backend
-      const user: User = {
-        id: 'user-' + Date.now(),
-        phoneNumber: '',  // This would be set from the login flow
-        role: UserRole.USER,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      };
-      
-      // Save user to AsyncStorage
-      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      // Verify code with Firebase
+      const user = await verifyCode(verificationId, otp);
       
       dispatch({ type: 'AUTH_SUCCESS', user });
       return user;
@@ -163,24 +156,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'AUTH_LOADING' });
     
     try {
-      // In a real app, this would update the user profile in your backend
-      
-      // Mock implementation with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
       if (!state.currentUser) {
         throw new Error('User not authenticated');
       }
       
-      // Update the user object
-      const updatedUser: User = {
-        ...state.currentUser,
-        ...userData,
-        updatedAt: Date.now()
-      };
-      
-      // Save updated user to AsyncStorage
-      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
+      // Update user with Firebase service
+      const updatedUser = await updateUser(userData, state.currentUser);
       
       dispatch({ type: 'AUTH_SUCCESS', user: updatedUser });
       return updatedUser;
@@ -194,10 +175,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Logout function
   const logout = async (): Promise<void> => {
     try {
-      // In a real app, this would sign out from Firebase Auth or your backend
-      
-      // Remove user from AsyncStorage
-      await AsyncStorage.removeItem(USER_STORAGE_KEY);
+      // Sign out using Firebase service
+      await signOut();
       
       dispatch({ type: 'AUTH_LOGOUT' });
     } catch (error) {
@@ -214,17 +193,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Provide the auth context to children
   return (
-    <AuthContext.Provider
-      value={{
-        ...state,
-        login,
-        verifyOTP,
-        updateUserProfile,
-        logout,
-        resetError
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifierRef}
+        firebaseConfig={app.options}
+        attemptInvisibleVerification={false}
+        title="Prove you're human!"
+        cancelLabel="Close"
+      />
+      <AuthContext.Provider
+        value={{
+          ...state,
+          login,
+          verifyOTP,
+          updateUserProfile,
+          logout,
+          resetError
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    </>
   );
 }; 

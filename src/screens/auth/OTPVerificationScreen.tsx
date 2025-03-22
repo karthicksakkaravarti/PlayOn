@@ -28,8 +28,9 @@ type OTPVerificationScreenRouteProp = RouteProp<
 const OTPVerificationScreen = () => {
   const navigation = useNavigation<OTPVerificationScreenNavigationProp>();
   const route = useRoute<OTPVerificationScreenRouteProp>();
-  const { phoneNumber, verificationId } = route.params;
-  const { verifyOTP, error: authError, resetError } = useAuth();
+  const [verificationId, setVerificationId] = useState(route.params.verificationId);
+  const { phoneNumber } = route.params;
+  const { verifyOTP, login, error: authError, resetError } = useAuth();
 
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
@@ -91,17 +92,21 @@ const OTPVerificationScreen = () => {
     setLoading(true);
     
     try {
-      // In a real implementation, this would call Firebase to resend the code
+      // Use the login function to resend verification code
+      const newVerificationId = await login(phoneNumber);
       
-      // Mock API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Store the new verification ID
+      setVerificationId(newVerificationId);
       
       // Reset countdown
       setCountdown(60);
       setCanResend(false);
     } catch (err) {
       console.error('Error resending code:', err);
-      setError('Failed to resend code. Please try again.');
+      // If authError is not set by context, set a fallback error
+      if (!authError) {
+        setError('Failed to resend code. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

@@ -1,60 +1,143 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { 
+  View, 
+  StyleSheet, 
+  SafeAreaView, 
+  ScrollView 
+} from 'react-native';
 import Text from '../components/ui/Text';
 import Button from '../components/ui/Button';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../hooks/useTheme';
-import { spacing } from '../constants/theme';
+import { colors, spacing } from '../constants/theme';
+import { useAuth } from '../hooks/useAuth';
 
 const HomeScreen: React.FC = () => {
-  const { theme } = useTheme();
-  const { currentUser, signOut } = useAuth();
+  const { currentUser, logout } = useAuth();
 
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     try {
-      await signOut();
+      await logout();
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Error logging out:', error);
     }
   };
 
-  const phoneNumber = currentUser?.phoneNumber || 'User';
-
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background.light }]}>
-      <Text variant="h2">Welcome!</Text>
-      <Text variant="body1" style={styles.subtitle}>
-        {phoneNumber}
-      </Text>
-      <Text variant="body1" style={styles.subtitle}>
-        You are signed in successfully
-      </Text>
-      <View style={styles.buttonContainer}>
-        <Button 
-          variant="secondary"
-          onPress={handleSignOut}
-        >
-          Sign Out
-        </Button>
-      </View>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.header}>
+          <Text variant="h1">Welcome to PlayOn</Text>
+          <Text variant="body1" style={styles.subtitle}>Your one-stop platform for sports and games</Text>
+        </View>
+
+        <View style={styles.userInfoContainer}>
+          <Text variant="h2" style={styles.sectionTitle}>Your Profile</Text>
+          
+          <View style={styles.infoCard}>
+            <View style={styles.infoRow}>
+              <Text variant="body2" style={styles.infoLabel}>Name:</Text>
+              <Text variant="body1">{currentUser?.name || 'Not provided'}</Text>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Text variant="body2" style={styles.infoLabel}>Phone:</Text>
+              <Text variant="body1">{currentUser?.phoneNumber}</Text>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Text variant="body2" style={styles.infoLabel}>Email:</Text>
+              <Text variant="body1">{currentUser?.email || 'Not provided'}</Text>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Text variant="body2" style={styles.infoLabel}>Account created:</Text>
+              <Text variant="body1">
+                {currentUser?.createdAt 
+                  ? new Date(currentUser.createdAt).toLocaleDateString() 
+                  : 'Unknown'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.actionsContainer}>
+          <Button
+            style={styles.button}
+            onPress={() => {}}
+            fullWidth
+          >
+            Browse Games
+          </Button>
+          
+          <Button
+            style={styles.button}
+            variant="outlined"
+            onPress={() => {}}
+            fullWidth
+          >
+            My Bookings
+          </Button>
+          
+          <Button
+            style={styles.logoutButton}
+            variant="text"
+            onPress={handleLogout}
+          >
+            Log out
+          </Button>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: colors.background.light,
+  },
+  scrollContainer: {
+    flexGrow: 1,
     padding: spacing.lg,
   },
-  subtitle: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.xl,
+  header: {
+    marginTop: spacing.xl,
+    marginBottom: spacing.xl * 1.5,
+    alignItems: 'center',
   },
-  buttonContainer: {
-    width: '100%',
+  subtitle: {
+    marginTop: spacing.xs,
+    color: colors.text.secondary,
+    textAlign: 'center',
+  },
+  userInfoContainer: {
+    marginBottom: spacing.xl * 1.5,
+  },
+  sectionTitle: {
+    marginBottom: spacing.md,
+  },
+  infoCard: {
+    backgroundColor: colors.background.grey,
+    borderRadius: 12,
+    padding: spacing.lg,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+  },
+  infoLabel: {
+    color: colors.text.secondary,
+    width: 120,
+  },
+  actionsContainer: {
+    marginTop: 'auto',
+    marginBottom: spacing.lg,
+  },
+  button: {
+    marginBottom: spacing.md,
+  },
+  logoutButton: {
     marginTop: spacing.lg,
+    marginBottom: spacing.md,
   },
 });
 

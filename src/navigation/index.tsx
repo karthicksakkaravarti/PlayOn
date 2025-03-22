@@ -19,13 +19,7 @@ export type RootStackParamList = {
 import PhoneEntryScreen from '../screens/auth/PhoneEntryScreen';
 import OTPVerificationScreen from '../screens/auth/OTPVerificationScreen'; 
 import UserInfoScreen from '../screens/auth/UserInfoScreen';
-
-// Temporary placeholder for Home screen until the real one is properly imported
-const HomeScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Home Screen</Text>
-  </View>
-);
+import HomeScreen from '../screens/HomeScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
