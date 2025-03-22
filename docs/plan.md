@@ -47,7 +47,7 @@
   - **Step Dependencies**: Step 2
 
 ## Authentication
-- [ ] Step 5: Set up Firebase authentication
+- [x] Step 5: Set up Firebase authentication
   - **Task**: Configure Firebase for OTP phone authentication
   - **Files**:
     - `src/services/firebase.ts`: Firebase configuration
@@ -60,7 +60,7 @@
     - Enable Phone Authentication in the Firebase console
     - Install dependencies: `npm install firebase expo-firebase-recaptcha`
 
-- [ ] Step 6: Create authentication screens
+- [x] Step 6: Create authentication screens
   - **Task**: Build login, OTP verification screens
   - **Files**:
     - `src/screens/auth/PhoneEntryScreen.tsx`: Phone number input screen
@@ -70,7 +70,7 @@
     - `src/components/auth/OTPInput.tsx`: OTP input component
   - **Step Dependencies**: Step 3, Step 5
 
-- [ ] Step 7: Implement authentication context
+- [x] Step 7: Implement authentication context
   - **Task**: Create context for managing authentication state
   - **Files**:
     - `src/context/AuthContext.tsx`: Auth context and provider
