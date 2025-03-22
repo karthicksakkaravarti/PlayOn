@@ -8,6 +8,23 @@ import {
   PhoneInfoOptions,
   Auth
 } from 'firebase/auth';
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  Firestore
+} from 'firebase/firestore';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,14 +42,38 @@ const firebaseConfig = {
 // Initialize Firebase
 let app: FirebaseApp;
 let auth: Auth;
+let firestore: Firestore;
 
 if (getApps().length === 0) {
   app = initializeApp(firebaseConfig);
   auth = getAuth(app);
+  firestore = getFirestore(app);
 } else {
   app = getApp();
   auth = getAuth(app);
+  firestore = getFirestore(app);
 }
 
 // Export Firebase services
-export { app, auth, PhoneAuthProvider, signInWithCredential }; 
+export { 
+  app, 
+  auth, 
+  firestore,
+  // Auth exports
+  PhoneAuthProvider, 
+  signInWithCredential,
+  // Firestore exports
+  collection,
+  doc,
+  addDoc,
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter
+}; 

@@ -56,6 +56,7 @@ export interface ReviewSummary {
 
 export interface ReviewRequest {
   venueId: string;
+  userId: string;
   bookingId: string;
   rating: number;
   title?: string;

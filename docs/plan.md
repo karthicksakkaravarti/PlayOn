@@ -89,7 +89,7 @@
     - `src/types/review.ts`: Review type definitions
   - **Step Dependencies**: Step 2
 
-- [ ] Step 9: Set up backend API service (Firebase)
+- [x] Step 9: Set up backend API service (Firebase)
   - **Task**: Configure API service for data operations
   - **Files**:
     - `src/services/api.ts`: API client setup
@@ -103,17 +103,34 @@
     - Set up Firestore collections
 
 ## Core Components
-- [ ] Step 10: Create shared UI components
+- [x] Step 10: Create shared UI components
   - **Task**: Build reusable UI components
   - **Files**:
-    - `src/components/ui/Card.tsx`: Card component
-    - `src/components/ui/Input.tsx`: Input component
-    - `src/components/ui/Avatar.tsx`: Avatar component
-    - `src/components/ui/Badge.tsx`: Badge component
-    - `src/components/ui/Modal.tsx`: Modal component
-    - `src/components/ui/Alert.tsx`: Alert component
-    - `src/components/ui/Spinner.tsx`: Loading spinner
+    - `src/components/ui/Card.tsx`: Card component ✓
+    - `src/components/ui/Input.tsx`: Input component ✓
+    - `src/components/ui/Button.tsx`: Button component ✓
+    - `src/components/ui/Text.tsx`: Text component ✓
+    - `src/components/ui/Avatar.tsx`: Avatar component ✓
+    - `src/components/ui/Badge.tsx`: Badge component ✓
+    - `src/components/ui/Modal.tsx`: Modal component ✓
+    - `src/components/ui/Alert.tsx`: Alert component ✓
+    - `src/components/ui/Spinner.tsx`: Loading spinner ✓
   - **Step Dependencies**: Step 4
+
+- [ ] Step 10.1: Implement user profile and home page
+  - **Task**: Create user profile management and enhance home page UI
+  - **Files**:
+    - `src/screens/user/ProfileScreen.tsx`: User profile screen
+    - `src/screens/user/EditProfileScreen.tsx`: Edit profile screen
+    - `src/screens/user/HomeScreen.tsx`: Enhanced home screen
+    - `src/components/user/ProfileHeader.tsx`: Profile header with Avatar
+    - `src/components/user/UserStats.tsx`: User activity statistics
+    - `src/hooks/useProfile.ts`: Hook for profile management
+  - **Step Dependencies**: Step 10, Step 9
+  - **User Instructions**: 
+    - Test reading/writing user data to Firestore
+    - Set up Firestore collection for user profiles
+    - Design home screen header with user information
 
 - [ ] Step 11: Implement venue listing components
   - **Task**: Create components for displaying venue listings

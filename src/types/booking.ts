@@ -76,6 +76,7 @@ export interface BookingSlot {
 
 export interface BookingRequest {
   venueId: string;
+  userId: string;
   date: string; // Format: "YYYY-MM-DD"
   startTime: string; // Format: "HH:MM" in 24h
   endTime: string; // Format: "HH:MM" in 24h
