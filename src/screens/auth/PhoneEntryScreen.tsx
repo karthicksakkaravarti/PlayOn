@@ -31,22 +31,27 @@ const PhoneEntryScreen = () => {
   };
 
   const handleContinue = async () => {
+    console.log('🔍 PHONE ENTRY DEBUG: handleContinue pressed');
     // Reset error states
     setError(null);
     resetError();
 
     // Validate phone number
     if (!validatePhoneNumber(phoneNumber)) {
+      console.log('🔍 PHONE ENTRY DEBUG: Invalid phone number:', phoneNumber);
       setError('Please enter a valid phone number');
       return;
     }
 
+    console.log('🔍 PHONE ENTRY DEBUG: Phone validation passed, setting loading state');
     setLoading(true);
 
     try {
+      console.log('🔍 PHONE ENTRY DEBUG: Calling login with phoneNumber:', phoneNumber);
       // Call the login function from auth context
       const verificationId = await login(phoneNumber);
       
+      console.log('🔍 PHONE ENTRY DEBUG: Login successful, navigating to OTP screen');
       // Navigate to OTP verification screen with phone number and verification ID
       navigation.navigate('OTPVerification', {
         phoneNumber,
@@ -54,12 +59,13 @@ const PhoneEntryScreen = () => {
       });
     } catch (err) {
       // Error is handled by the auth context, but we can update the UI state
-      console.error('Error sending verification code:', err);
+      console.error('🔍 PHONE ENTRY DEBUG: Error sending verification code:', err);
       // If authError is not set by context, set a fallback error
       if (!authError) {
         setError('Failed to send verification code. Please try again.');
       }
     } finally {
+      console.log('🔍 PHONE ENTRY DEBUG: Login attempt completed, resetting loading state');
       setLoading(false);
     }
   };

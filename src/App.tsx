@@ -3,7 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { Navigation } from './navigation';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './context';
 import { colors } from './constants/theme';
 
 export default function App() {

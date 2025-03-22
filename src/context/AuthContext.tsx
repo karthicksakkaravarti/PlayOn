@@ -107,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // In a real app, this would call Firebase Auth or your backend
       // to initiate phone verification
-      
+
       // Mock implementation with a timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
       
