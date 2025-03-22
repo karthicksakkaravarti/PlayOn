@@ -79,7 +79,7 @@
   - **Step Dependencies**: Step 5, Step 6
 
 ## Database & API Setup
-- [ ] Step 8: Define database schema
+- [x] Step 8: Define database schema
   - **Task**: Design database schema for users, venues, bookings
   - **Files**:
     - `src/types/user.ts`: User type definitions
@@ -89,7 +89,7 @@
     - `src/types/review.ts`: Review type definitions
   - **Step Dependencies**: Step 2
 
-- [ ] Step 9: Set up backend API service (Firebase/Node.js)
+- [ ] Step 9: Set up backend API service (Firebase)
   - **Task**: Configure API service for data operations
   - **Files**:
     - `src/services/api.ts`: API client setup
@@ -97,10 +97,10 @@
     - `src/services/venues.ts`: Venue data operations
     - `src/services/bookings.ts`: Booking data operations
     - `src/services/payments.ts`: Payment operations
+    - `src/services/review.ts`: Review operation
   - **Step Dependencies**: Step 8
   - **User Instructions**: 
-    - If using Firebase: Set up Firestore collections
-    - If using Node.js: Configure backend server
+    - Set up Firestore collections
 
 ## Core Components
 - [ ] Step 10: Create shared UI components
