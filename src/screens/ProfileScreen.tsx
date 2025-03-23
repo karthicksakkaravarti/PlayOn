@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,20 +6,52 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
-  Image
+  Image,
+  ActivityIndicator,
+  Alert,
+  RefreshControl
 } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { colors } from '../constants/theme';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
   const { currentUser, logout } = useAuth();
+  const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Handler for the refresh control
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    // Simulate a refresh - in a real app, you might fetch updated user data here
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Log Out',
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (error) {
+              console.error('Error logging out:', error);
+              Alert.alert('Error', 'Failed to log out. Please try again.');
+            }
+          },
+          style: 'destructive'
+        }
+      ]
+    );
   };
 
   const formatDate = (timestamp: number) => {
@@ -27,9 +59,33 @@ const ProfileScreen = () => {
     return new Date(timestamp).toLocaleDateString();
   };
 
+  const handleEditProfile = () => {
+    // Navigate to edit profile screen
+    // For now just log the action since we haven't implemented the edit screen yet
+    console.log('Edit profile button pressed');
+    Alert.alert(
+      'Edit Profile',
+      'This feature will be available soon!',
+      [{ text: 'OK' }]
+    );
+  };
+
+  if (!currentUser) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={colors.primary.main} />
+        <Text style={styles.loadingText}>Loading profile...</Text>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Welcome to PlayOn</Text>
           <Text style={styles.subtitle}>Your one-stop platform for sports and games</Text>
@@ -46,7 +102,7 @@ const ProfileScreen = () => {
             
             <View style={styles.profileRow}>
               <Text style={styles.profileLabel}>Phone:</Text>
-              <Text style={styles.profileValue}>{currentUser?.phoneNumber}</Text>
+              <Text style={styles.profileValue}>{currentUser?.phoneNumber || 'Not provided'}</Text>
             </View>
             
             <View style={styles.profileRow}>
@@ -64,7 +120,7 @@ const ProfileScreen = () => {
         <View style={styles.actionsContainer}>
           <TouchableOpacity 
             style={styles.editButton}
-            onPress={() => console.log('Edit profile')}
+            onPress={handleEditProfile}
           >
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
@@ -85,6 +141,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background.light,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: colors.text.secondary,
   },
   header: {
     padding: 20,

@@ -24,52 +24,7 @@ const HomeScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.header}>
-          <Text variant="h1">Welcome to PlayOn</Text>
-          <Text variant="body1" style={styles.subtitle}>Your one-stop platform for sports and games</Text>
-        </View>
 
-        <View style={styles.userInfoContainer}>
-          <Text variant="h2" style={styles.sectionTitle}>Your Profile</Text>
-          
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text variant="body2" style={styles.infoLabel}>Name:</Text>
-              <Text variant="body1">{currentUser?.name || 'Not provided'}</Text>
-            </View>
-            
-            <View style={styles.infoRow}>
-              <Text variant="body2" style={styles.infoLabel}>Phone:</Text>
-              <Text variant="body1">{currentUser?.phoneNumber}</Text>
-            </View>
-            
-            <View style={styles.infoRow}>
-              <Text variant="body2" style={styles.infoLabel}>Email:</Text>
-              <Text variant="body1">{currentUser?.email || 'Not provided'}</Text>
-            </View>
-            
-            <View style={styles.infoRow}>
-              <Text variant="body2" style={styles.infoLabel}>Account created:</Text>
-              <Text variant="body1">
-                {currentUser?.createdAt 
-                  ? new Date(currentUser.createdAt).toLocaleDateString() 
-                  : 'Unknown'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.actionsContainer}>
-          
-
-          <Button
-            style={styles.logoutButton}
-            variant="text"
-            onPress={handleLogout}
-          >
-            Log out
-          </Button>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );

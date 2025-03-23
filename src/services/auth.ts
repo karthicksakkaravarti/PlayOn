@@ -5,12 +5,22 @@ import {
   UserCredential,
   Auth
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { 
+  auth, 
+  firestore, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  updateDoc 
+} from './firebase';
 import { User, UserRole } from '../types/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Storage keys
 const USER_STORAGE_KEY = '@PlayOn:user';
+
+// Firestore collection names
+const USERS_COLLECTION = 'users';
 
 /**
  * Starts the phone authentication process by sending an OTP
@@ -56,21 +66,43 @@ export const verifyCode = async (
     const userCredential: UserCredential = await signInWithCredential(auth, credential);
     const firebaseUser = userCredential.user;
 
-    // Create our app's user model from Firebase user
-    const user: User = {
-      id: firebaseUser.uid,
-      phoneNumber: firebaseUser.phoneNumber || '',
-      role: UserRole.USER,
-      createdAt: firebaseUser.metadata.creationTime 
-        ? new Date(firebaseUser.metadata.creationTime).getTime() 
-        : Date.now(),
-      updatedAt: Date.now()
-    };
-    
-    // Save user to AsyncStorage
-    await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-    
-    return user;
+    // Create or get user from Firestore
+    const userRef = doc(firestore, USERS_COLLECTION, firebaseUser.uid);
+    const userDoc = await getDoc(userRef);
+
+    if (userDoc.exists()) {
+      // User exists, update last login time
+      const userData = userDoc.data() as User;
+      
+      // Update last login in Firestore
+      await updateDoc(userRef, {
+        updatedAt: Date.now()
+      });
+      
+      // Save user to AsyncStorage
+      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData));
+      
+      return userData;
+    } else {
+      // Create new user document
+      const newUser: User = {
+        id: firebaseUser.uid,
+        phoneNumber: firebaseUser.phoneNumber || '',
+        role: UserRole.USER,
+        createdAt: firebaseUser.metadata.creationTime 
+          ? new Date(firebaseUser.metadata.creationTime).getTime() 
+          : Date.now(),
+        updatedAt: Date.now()
+      };
+      
+      // Save to Firestore
+      await setDoc(userRef, newUser);
+      
+      // Save to AsyncStorage
+      await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(newUser));
+      
+      return newUser;
+    }
   } catch (error) {
     console.error('Error verifying code:', error);
     throw error;
@@ -84,18 +116,28 @@ export const verifyCode = async (
  */
 export const updateUser = async (userData: Partial<User>, currentUser: User): Promise<User> => {
   try {
-    // In a real implementation, you might call a Firestore update here
+    // Get the user reference
+    const userRef = doc(firestore, USERS_COLLECTION, currentUser.id);
     
-    // Update the user object
+    // Update the user object in memory
     const updatedUser: User = {
       ...currentUser,
       ...userData,
       updatedAt: Date.now()
     };
     
+    // Save to Firestore - only save the fields that were updated plus the timestamp
+    const updateData = {
+      ...userData,
+      updatedAt: updatedUser.updatedAt
+    };
+    
+    await updateDoc(userRef, updateData);
+    
     // Save updated user to AsyncStorage
     await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
     
+    console.log('User data updated successfully:', updatedUser);
     return updatedUser;
   } catch (error) {
     console.error('Error updating user:', error);

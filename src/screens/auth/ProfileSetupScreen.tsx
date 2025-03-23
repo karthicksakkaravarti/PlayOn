@@ -9,7 +9,8 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  Text
+  Text,
+  Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../hooks/useAuth';
@@ -49,17 +50,34 @@ const ProfileSetupScreen = () => {
     setLoading(true);
 
     try {
+      console.log('Submitting profile data:', { name, email });
+      
       // Update user profile with auth context
-      await updateUserProfile({
-        name,
-        email: email || undefined,
+      const updatedUser = await updateUserProfile({
+        name: name.trim(),
+        email: email.trim() || undefined,
       });
+      
+      console.log('Profile updated successfully:', updatedUser);
+      
+      // Show success message
+      Alert.alert(
+        'Profile Updated',
+        'Your profile has been updated successfully!',
+        [{ text: 'OK' }]
+      );
       
       // Navigation will be handled by the Navigation component 
       // since currentUser will be updated
     } catch (err) {
       console.error('Error updating profile:', err);
-      // Error is handled by auth context
+      
+      // Show error message
+      Alert.alert(
+        'Update Failed',
+        'There was a problem updating your profile. Please try again.',
+        [{ text: 'OK' }]
+      );
     } finally {
       setLoading(false);
     }
@@ -70,9 +88,23 @@ const ProfileSetupScreen = () => {
     resetError();
     setLoading(true);
     
-    updateUserProfile({ name: 'User' })
+    console.log('Skipping profile setup, using default name: User');
+    
+    updateUserProfile({ 
+      name: 'User',
+      // Include timestamp to ensure the update is detected
+      updatedAt: Date.now()
+    })
+      .then(user => {
+        console.log('Profile set with default values:', user);
+      })
       .catch(err => {
-        console.error('Error updating profile:', err);
+        console.error('Error updating profile with defaults:', err);
+        Alert.alert(
+          'Error',
+          'Failed to set up profile with default values',
+          [{ text: 'OK' }]
+        );
       })
       .finally(() => {
         setLoading(false);
