@@ -14,12 +14,16 @@ import { UserNavigator } from './UserNavigator';
 import { VenueOwnerNavigator } from './VenueOwnerNavigator';
 import { AdminNavigator } from './AdminNavigator';
 
+// Import screens for direct rendering
+import ProfileSetupScreen from '../screens/auth/ProfileSetupScreen';
+
 // Define the navigation parameters
 export type RootStackParamList = {
   Auth: undefined;
   User: undefined;
   VenueOwner: undefined;
   Admin: undefined;
+  ProfileSetup: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -48,12 +52,13 @@ export const Navigation = () => {
     return () => clearTimeout(timeoutId);
   }, [loading, initialized]);
 
-
-
   // Show loading indicator while checking authentication state
   if (loading && !initialized && !forceRender) {
     return <SplashScreen />;
   }
+
+  // Check if user is logged in but doesn't have a name
+  const needsProfileSetup = currentUser && !currentUser.name;
 
   return (
     <NavigationContainer>
@@ -61,6 +66,9 @@ export const Navigation = () => {
         {!currentUser ? (
           // No user, show auth flow
           <Stack.Screen name="Auth" component={AuthNavigator} />
+        ) : needsProfileSetup ? (
+          // User needs to complete profile
+          <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
         ) : currentUser.role === UserRole.USER ? (
           // User role flow
           <Stack.Screen name="User" component={UserNavigator} />
