@@ -2,10 +2,10 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthStackParamList } from '../types/navigation';
 
-// Placeholder components for screens (will be implemented later)
-const PhoneEntryScreen = () => null;
-const OTPVerificationScreen = () => null;
-const UserInfoScreen = () => null;
+// Import actual screens
+import PhoneEntryScreen from '../screens/auth/PhoneEntryScreen';
+import OTPVerificationScreen from '../screens/auth/OTPVerificationScreen';
+import ProfileSetupScreen from '../screens/auth/ProfileSetupScreen';
 
 const Stack = createStackNavigator<AuthStackParamList>();
 
@@ -18,7 +18,7 @@ export const AuthNavigator = () => {
     >
       <Stack.Screen name="PhoneEntry" component={PhoneEntryScreen} />
       <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
-      <Stack.Screen name="UserInfo" component={UserInfoScreen} />
+      <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
     </Stack.Navigator>
   );
 }; 

@@ -70,7 +70,7 @@ const OTPVerificationScreen = () => {
       // If phone auth successful but user profile incomplete, 
       // navigate to profile completion screen
       if (!user.name) {
-        navigation.navigate('UserInfo', { phoneNumber });
+        navigation.navigate('ProfileSetup', { phoneNumber });
       }
       // Otherwise, navigation will be handled by the Navigation component 
       // since currentUser will be set

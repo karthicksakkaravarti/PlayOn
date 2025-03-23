@@ -1,99 +1,50 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { VenueOwnerStackParamList, VenueOwnerTabParamList } from '../types/navigation';
+import { View, Text, StyleSheet } from 'react-native';
+import { colors } from '../constants/theme';
+import { VenueOwnerStackParamList } from '../types/navigation';
 
-// Placeholder components for screens (will be implemented later)
-const VenuesScreen = () => null;
-const VenueOwnerBookingsScreen = () => null;
-const EarningsScreen = () => null;
-const VenueOwnerProfileScreen = () => null;
-const AddVenueScreen = () => null;
-const EditVenueScreen = () => null;
-const VenueOwnerVenueDetailScreen = () => null;
-const AvailabilityScreen = () => null;
-const VenueOwnerBookingDetailScreen = () => null;
+// Placeholder screens for now - these would be implemented properly
+const DashboardScreen = () => <View style={styles.placeholder}><Text>Venue Owner Dashboard</Text></View>;
+const ManageVenuesScreen = () => <View style={styles.placeholder}><Text>Manage Venues</Text></View>;
+const VenueDetailsScreen = () => <View style={styles.placeholder}><Text>Venue Details</Text></View>;
+const AddVenueScreen = () => <View style={styles.placeholder}><Text>Add Venue</Text></View>;
+const EditVenueScreen = () => <View style={styles.placeholder}><Text>Edit Venue</Text></View>;
+const BookingsScreen = () => <View style={styles.placeholder}><Text>Bookings</Text></View>;
+const ProfileScreen = () => <View style={styles.placeholder}><Text>Profile</Text></View>;
+const SettingsScreen = () => <View style={styles.placeholder}><Text>Settings</Text></View>;
 
-const Tab = createBottomTabNavigator<VenueOwnerTabParamList>();
 const Stack = createStackNavigator<VenueOwnerStackParamList>();
-
-const VenueOwnerTabNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#0066cc',
-        headerShown: false,
-      }}
-    >
-      <Tab.Screen 
-        name="Venues" 
-        component={VenuesScreen} 
-        options={{
-          tabBarLabel: 'Venues',
-        }}
-      />
-      <Tab.Screen 
-        name="Bookings" 
-        component={VenueOwnerBookingsScreen} 
-        options={{
-          tabBarLabel: 'Bookings',
-        }}
-      />
-      <Tab.Screen 
-        name="Earnings" 
-        component={EarningsScreen} 
-        options={{
-          tabBarLabel: 'Earnings',
-        }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={VenueOwnerProfileScreen} 
-        options={{
-          tabBarLabel: 'Profile',
-        }}
-      />
-    </Tab.Navigator>
-  );
-};
 
 export const VenueOwnerNavigator = () => {
   return (
     <Stack.Navigator
+      initialRouteName="Dashboard"
       screenOptions={{
-        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.primary.main,
+        },
+        headerTintColor: colors.primary.contrast,
       }}
     >
-      <Stack.Screen 
-        name="Main" 
-        component={VenueOwnerTabNavigator} 
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="AddVenue" 
-        component={AddVenueScreen} 
-        options={{ title: 'Add Venue' }}
-      />
-      <Stack.Screen 
-        name="EditVenue" 
-        component={EditVenueScreen} 
-        options={{ title: 'Edit Venue' }}
-      />
-      <Stack.Screen 
-        name="VenueDetail" 
-        component={VenueOwnerVenueDetailScreen} 
-        options={{ title: 'Venue Details' }}
-      />
-      <Stack.Screen 
-        name="Availability" 
-        component={AvailabilityScreen} 
-        options={{ title: 'Manage Availability' }}
-      />
-      <Stack.Screen 
-        name="BookingDetail" 
-        component={VenueOwnerBookingDetailScreen} 
-        options={{ title: 'Booking Details' }}
-      />
+      <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="ManageVenues" component={ManageVenuesScreen} options={{ title: 'My Venues' }} />
+      <Stack.Screen name="VenueDetails" component={VenueDetailsScreen} options={{ title: 'Venue Details' }} />
+      <Stack.Screen name="AddVenue" component={AddVenueScreen} options={{ title: 'Add New Venue' }} />
+      <Stack.Screen name="EditVenue" component={EditVenueScreen} options={{ title: 'Edit Venue' }} />
+      <Stack.Screen name="Bookings" component={BookingsScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
-}; 
+};
+
+const styles = StyleSheet.create({
+  placeholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.light,
+  },
+}); 

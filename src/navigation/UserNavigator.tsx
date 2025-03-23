@@ -3,18 +3,21 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { UserStackParamList, UserTabParamList } from '../types/navigation';
 
-// Placeholder components for screens (will be implemented later)
-const HomeScreen = () => null;
-const ExploreScreen = () => null;
-const BookingsScreen = () => null;
-const FavoritesScreen = () => null;
-const ProfileScreen = () => null;
-const VenueDetailScreen = () => null;
-const BookingScreen = () => null;
-const PaymentScreen = () => null;
-const BookingConfirmScreen = () => null;
-const BookingDetailScreen = () => null;
-const ReviewFormScreen = () => null;
+// Import the screens
+import HomeScreen from '../screens/HomeScreen';
+
+// Placeholder screens for now - these would be implemented properly
+const ExploreScreen = () => <View style={styles.placeholder}><Text>Explore Screen</Text></View>;
+const BookingsScreen = () => <View style={styles.placeholder}><Text>Bookings Screen</Text></View>;
+const FavoritesScreen = () => <View style={styles.placeholder}><Text>Favorites Screen</Text></View>;
+const ProfileScreen = () => <View style={styles.placeholder}><Text>Profile Screen</Text></View>;
+const VenueDetailsScreen = () => <View style={styles.placeholder}><Text>Venue Details Screen</Text></View>;
+const BookingConfirmationScreen = () => <View style={styles.placeholder}><Text>Booking Confirmation Screen</Text></View>;
+const EditProfileScreen = () => <View style={styles.placeholder}><Text>Edit Profile Screen</Text></View>;
+const SettingsScreen = () => <View style={styles.placeholder}><Text>Settings Screen</Text></View>;
+
+import { View, Text, StyleSheet } from 'react-native';
+import { colors } from '../constants/theme';
 
 const Tab = createBottomTabNavigator<UserTabParamList>();
 const Stack = createStackNavigator<UserStackParamList>();
@@ -23,7 +26,7 @@ const UserTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#0066cc',
+        tabBarActiveTintColor: colors.primary.main,
         headerShown: false,
       }}
     >
@@ -32,7 +35,6 @@ const UserTabNavigator = () => {
         component={HomeScreen} 
         options={{
           tabBarLabel: 'Home',
-          // We'll add icons later
         }}
       />
       <Tab.Screen 
@@ -70,45 +72,25 @@ const UserTabNavigator = () => {
 export const UserNavigator = () => {
   return (
     <Stack.Navigator
+      initialRouteName="Tabs"
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
       }}
     >
-      <Stack.Screen 
-        name="Main" 
-        component={UserTabNavigator} 
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen 
-        name="VenueDetail" 
-        component={VenueDetailScreen} 
-        options={{ title: 'Venue Details' }}
-      />
-      <Stack.Screen 
-        name="Booking" 
-        component={BookingScreen} 
-        options={{ title: 'Book Venue' }}
-      />
-      <Stack.Screen 
-        name="Payment" 
-        component={PaymentScreen} 
-        options={{ title: 'Payment' }}
-      />
-      <Stack.Screen 
-        name="BookingConfirm" 
-        component={BookingConfirmScreen} 
-        options={{ title: 'Booking Confirmed' }}
-      />
-      <Stack.Screen 
-        name="BookingDetail" 
-        component={BookingDetailScreen} 
-        options={{ title: 'Booking Details' }}
-      />
-      <Stack.Screen 
-        name="ReviewForm" 
-        component={ReviewFormScreen} 
-        options={{ title: 'Write Review' }}
-      />
+      <Stack.Screen name="Tabs" component={UserTabNavigator} />
+      <Stack.Screen name="VenueDetails" component={VenueDetailsScreen} />
+      <Stack.Screen name="BookingConfirmation" component={BookingConfirmationScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
-}; 
+};
+
+const styles = StyleSheet.create({
+  placeholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.light,
+  },
+}); 

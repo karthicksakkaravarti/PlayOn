@@ -6,33 +6,41 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // Context
 import { useAuth } from '../hooks/useAuth';
 import { colors } from '../constants/theme';
+import { UserRole } from '../types/auth';
+
+// Import navigators
+import { AuthNavigator } from './AuthNavigator';
+import { UserNavigator } from './UserNavigator';
+import { VenueOwnerNavigator } from './VenueOwnerNavigator';
+import { AdminNavigator } from './AdminNavigator';
 
 // Define the navigation parameters
 export type RootStackParamList = {
-  Home: undefined;
-  PhoneAuth: undefined;
-  OTPVerification: { phoneNumber: string, verificationId: string };
-  UserInfo: { phoneNumber: string };
+  Auth: undefined;
+  User: undefined;
+  VenueOwner: undefined;
+  Admin: undefined;
 };
 
-// Import the actual screens
-import PhoneEntryScreen from '../screens/auth/PhoneEntryScreen';
-import OTPVerificationScreen from '../screens/auth/OTPVerificationScreen'; 
-import UserInfoScreen from '../screens/auth/UserInfoScreen';
-import HomeScreen from '../screens/HomeScreen';
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// Splash screen component
+const SplashScreen = () => (
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color={colors.primary.main} />
+    <Text style={styles.loadingText}>Loading PlayOn...</Text>
+  </View>
+);
 
 export const Navigation = () => {
   const { currentUser, loading, initialized } = useAuth();
   // Add state to track if we've been loading too long
   const [forceRender, setForceRender] = React.useState(false);
 
-  // Force render after 5 seconds if we're still in loading state
+  // Force render after 1 second if we're still in loading state
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (loading && !initialized) {
-        console.log('🔍 NAVIGATION DEBUG: Forcing navigation render after timeout');
         setForceRender(true);
       }
     }, 1000);
@@ -40,45 +48,28 @@ export const Navigation = () => {
     return () => clearTimeout(timeoutId);
   }, [loading, initialized]);
 
-  console.log('🔍 NAVIGATION DEBUG: Navigation rendering with state:', { 
-    currentUser, 
-    loading, 
-    initialized,
-    forceRender,
-    isLoading: loading && !initialized && !forceRender,
-    shouldShowPhoneAuth: !currentUser && (!loading || initialized || forceRender)
-  });
+
 
   // Show loading indicator while checking authentication state
-  // But only if we haven't forced rendering
   if (loading && !initialized && !forceRender) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.main} />
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <SplashScreen />;
   }
 
   return (
     <NavigationContainer>
-      
-      <Stack.Navigator 
-        initialRouteName={currentUser ? 'Home' : 'PhoneAuth'}
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        {currentUser ? (
-          // Authenticated routes
-          <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!currentUser ? (
+          // No user, show auth flow
+          <Stack.Screen name="Auth" component={AuthNavigator} />
+        ) : currentUser.role === UserRole.USER ? (
+          // User role flow
+          <Stack.Screen name="User" component={UserNavigator} />
+        ) : currentUser.role === UserRole.VENUE_OWNER ? (
+          // Venue owner flow
+          <Stack.Screen name="VenueOwner" component={VenueOwnerNavigator} />
         ) : (
-          // Auth routes
-          <>
-            <Stack.Screen name="PhoneAuth" component={PhoneEntryScreen} />
-            <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
-            <Stack.Screen name="UserInfo" component={UserInfoScreen} />
-          </>
+          // Admin flow
+          <Stack.Screen name="Admin" component={AdminNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
@@ -92,6 +83,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.background.light,
   },
+  loadingText: {
+    marginTop: 12,
+    color: colors.text.secondary,
+    fontSize: 16,
+  }
 });
 
 export default Navigation; 
