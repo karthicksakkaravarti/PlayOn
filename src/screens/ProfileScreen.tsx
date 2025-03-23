@@ -14,11 +14,16 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { colors } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { UserStackParamList } from '../types/navigation';
+
+type ProfileScreenNavigationProp = StackNavigationProp<UserStackParamList>;
 
 const ProfileScreen = () => {
   const { currentUser, logout } = useAuth();
-  const navigation = useNavigation();
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Handler for the refresh control
   const onRefresh = React.useCallback(() => {
@@ -42,10 +47,13 @@ const ProfileScreen = () => {
           text: 'Log Out',
           onPress: async () => {
             try {
+              setLoading(true);
               await logout();
+              // Navigation will be handled by the Navigation component when currentUser becomes null
             } catch (error) {
               console.error('Error logging out:', error);
               Alert.alert('Error', 'Failed to log out. Please try again.');
+              setLoading(false);
             }
           },
           style: 'destructive'
@@ -54,21 +62,38 @@ const ProfileScreen = () => {
     );
   };
 
-  const formatDate = (timestamp: number) => {
-    if (!timestamp) return 'Unknown';
-    return new Date(timestamp).toLocaleDateString();
+  const formatDate = (timestamp: number | undefined) => {
+    if (!timestamp) return 'Not available';
+    
+    try {
+      const date = new Date(timestamp);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Not available';
+      }
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Not available';
+    }
   };
 
   const handleEditProfile = () => {
-    // Navigate to edit profile screen
-    // For now just log the action since we haven't implemented the edit screen yet
-    console.log('Edit profile button pressed');
-    Alert.alert(
-      'Edit Profile',
-      'This feature will be available soon!',
-      [{ text: 'OK' }]
-    );
+    navigation.navigate('EditProfile');
   };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={colors.primary.main} />
+        <Text style={styles.loadingText}>Logging out...</Text>
+      </View>
+    );
+  }
 
   if (!currentUser) {
     return (
@@ -112,7 +137,7 @@ const ProfileScreen = () => {
             
             <View style={styles.profileRow}>
               <Text style={styles.profileLabel}>Account created:</Text>
-              <Text style={styles.profileValue}>{formatDate(currentUser?.createdAt || 0)}</Text>
+              <Text style={styles.profileValue}>{formatDate(currentUser?.createdAt)}</Text>
             </View>
           </View>
         </View>
