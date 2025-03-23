@@ -52,7 +52,6 @@ export const Navigation = () => {
   // Show loading indicator while checking authentication state
   // But only if we haven't forced rendering
   if (loading && !initialized && !forceRender) {
-    console.log('🔍 NAVIGATION DEBUG: Showing loading indicator');
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary.main} />
@@ -61,19 +60,9 @@ export const Navigation = () => {
     );
   }
 
-  // If we get here, we're either initialized or not loading or forced render
-  console.log('🔍 NAVIGATION DEBUG: Loading complete or bypassed. Ready to navigate:', {
-    loading,
-    initialized,
-    forceRender,
-    currentUser: currentUser ? 'User exists' : 'No user'
-  });
-  
-  console.log('🔍 NAVIGATION DEBUG: Rendering main navigation with initialRouteName:', 
-    currentUser ? 'Home' : 'PhoneAuth');
-
   return (
     <NavigationContainer>
+      
       <Stack.Navigator 
         initialRouteName={currentUser ? 'Home' : 'PhoneAuth'}
         screenOptions={{

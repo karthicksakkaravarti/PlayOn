@@ -60,23 +60,8 @@ const HomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.actionsContainer}>
-          <Button
-            style={styles.button}
-            onPress={() => {}}
-            fullWidth
-          >
-            Browse Games
-          </Button>
           
-          <Button
-            style={styles.button}
-            variant="outlined"
-            onPress={() => {}}
-            fullWidth
-          >
-            My Bookings
-          </Button>
-          
+
           <Button
             style={styles.logoutButton}
             variant="text"

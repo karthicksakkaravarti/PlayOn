@@ -7,7 +7,7 @@ import { AuthNavigator } from './AuthNavigator';
 import { UserNavigator } from './UserNavigator';
 import { VenueOwnerNavigator } from './VenueOwnerNavigator';
 import { AdminNavigator } from './AdminNavigator';
-
+import HomeScreen from '../screens/HomeScreen';
 // Placeholder for splash screen
 const SplashScreen = () => null;
 
